@@ -1,0 +1,8 @@
+import os
+
+print("Searching for .h5 model files...\n")
+
+for root, dirs, files in os.walk(r"C:\Users\jabee"):
+    for file in files:
+        if file.endswith(".h5"):
+            print(os.path.join(root, file))

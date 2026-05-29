@@ -1,0 +1,10 @@
+flask==3.0.3
+tensorflow==2.21.0
+numpy==2.1.3
+Pillow==11.2.1
+openai
+matplotlib
+seaborn
+scikit-learn
+jupyter
+ipykernel

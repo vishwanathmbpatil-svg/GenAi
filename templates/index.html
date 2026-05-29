@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leaf Disease Detector &amp; AI Advisor</title>
+  
+  <!-- Modern Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-gradient-start: #080f0b;
+      --bg-gradient-end: #040705;
+      --card-bg: rgba(18, 32, 24, 0.45);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-green: #10b981;
+      --accent-green-glow: rgba(16, 185, 129, 0.25);
+      --accent-disease: #ef4444;
+      --accent-disease-glow: rgba(239, 68, 68, 0.2);
+      --accent-healthy: #10b981;
+      --accent-healthy-glow: rgba(16, 185, 129, 0.2);
+      --text-primary: #f3f4f6;
+      --text-muted: #9ca3af;
+      --input-bg: rgba(10, 18, 14, 0.6);
+      --input-border: rgba(255, 255, 255, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at 50% 30%, #0d2216 0%, var(--bg-gradient-end) 80%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: rgba(8, 15, 11, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a7f3d0 0%, var(--accent-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .header-logo {
+      font-size: 1.8rem;
+      filter: drop-shadow(0 0 8px var(--accent-green));
+    }
+
+    .container {
+      display: flex;
+      gap: 28px;
+      padding: 32px;
+      max-width: 1280px;
+      width: 100%;
+      margin: auto;
+      flex: 1;
+    }
+
+    /* Left panel */
+    .left {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 28px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(16, 185, 129, 0.05);
+    }
+
+    .card h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #a7f3d0;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-primary);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a7f3d0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+    }
+
+    select:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px var(--accent-green-glow);
+    }
+
+    /* Custom Upload Drag & Drop Style */
+    .upload-zone {
+      border: 2px dashed rgba(16, 185, 129, 0.3);
+      background: var(--input-bg);
+      border-radius: 12px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--accent-green);
+      background: rgba(16, 185, 129, 0.05);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+    }
+
+    .upload-icon {
+      color: var(--accent-green);
+      filter: drop-shadow(0 0 4px var(--accent-green-glow));
+      transition: transform 0.3s ease;
+    }
+
+    .upload-zone:hover .upload-icon {
+      transform: translateY(-4px);
+    }
+
+    .upload-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .upload-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    #preview {
+      width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      display: none;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      animation: fadeIn 0.4s ease;
+    }
+
+    button.primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px var(--accent-green-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    button.primary:active {
+      transform: translateY(0);
+    }
+
+    button.primary:disabled {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    #result {
+      display: none;
+      animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+
+    .badge.disease {
+      background: var(--accent-disease-glow);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+    }
+
+    .badge.healthy {
+      background: var(--accent-healthy-glow);
+      color: #a7f3d0;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+    }
+
+    .confidence-tag {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .result-section {
+      margin-bottom: 16px;
+    }
+
+    .result-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .result-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .result-section-content {
+      background: rgba(10, 20, 15, 0.4);
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: #e5e7eb;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .content-explanation {
+      border-left: 3px solid #38bdf8;
+    }
+
+    .content-treatment {
+      border-left: 3px solid var(--accent-green);
+    }
+
+    .content-precautions {
+      border-left: 3px solid #f97316;
+    }
+
+    /* Right panel – chatbot */
+    .right {
+      width: 420px;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .chat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chat-header {
+      background: rgba(8, 15, 11, 0.6);
+      border-bottom: 1px solid var(--card-border);
+      padding: 18px 24px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      color: #a7f3d0;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      display: inline-block;
+      margin-right: 10px;
+      box-shadow: 0 0 8px #ef4444;
+      transition: all 0.4s ease;
+    }
+
+    .status-dot.active {
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .chat-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    /* Custom elegant Scrollbar */
+    #chat-messages::-webkit-scrollbar { width: 6px; }
+    #chat-messages::-webkit-scrollbar-track { background: transparent; }
+    #chat-messages::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    #chat-messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(16, 185, 129, 0.3);
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      animation: messagePop 0.3s ease;
+      word-wrap: break-word;
+    }
+
+    .msg.user {
+      background: var(--accent-green);
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .msg.bot {
+      background: rgba(255, 255, 255, 0.06);
+      color: #e5e7eb;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 16px 20px;
+      border-top: 1px solid var(--card-border);
+      background: rgba(8, 15, 11, 0.3);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-primary);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input input:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px var(--accent-green-glow);
+    }
+
+    .chat-input button {
+      padding: 12px 20px;
+      background: var(--accent-green);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px var(--accent-green-glow);
+    }
+
+    .chat-input button:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    .chat-input button:active {
+      transform: translateY(0);
+    }
+
+    /* Lock Overlay styles */
+    #chat-lock-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(6, 12, 9, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+      z-index: 10;
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #chat-lock-overlay.unlocked {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.05);
+    }
+
+    .lock-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      max-width: 320px;
+    }
+
+    .lock-icon-container {
+      width: 64px;
+      height: 64px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+      animation: pulseRed 2s infinite;
+    }
+
+    .lock-icon-svg {
+      color: #f87171;
+    }
+
+    .lock-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fca5a5;
+    }
+
+    .lock-content p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .spinner {
+      display: none;
+      text-align: center;
+      padding: 10px;
+      color: var(--accent-green);
+      font-size: 0.9rem;
+      font-weight: 500;
+      animation: pulseGreen 1.5s infinite;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes messagePop {
+      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes pulseRed {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    @keyframes pulseGreen {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    /* Responsive Grid Layout */
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        padding: 16px;
+      }
+      .right {
+        width: 100%;
+      }
+      header {
+        padding: 16px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="header-logo">🌿</span>
+  <h1>Leaf Disease Detector &amp; AI Advisor</h1>
+</header>
+
+<div class="container">
+
+  <!-- LEFT PANEL: Image Upload & Prediction results -->
+  <div class="left">
+    <div class="card">
+      <h2>🔍 Detect Disease</h2>
+
+      <div class="form-group">
+        <label class="form-label" for="plant-type">Plant Type</label>
+        <select id="plant-type">
+          <option value="corn">Corn / Maize</option>
+          <option value="sugarcane">Sugarcane</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Upload Leaf Image</label>
+        <!-- Styled Drag & Drop upload zone -->
+        <div class="upload-zone" onclick="document.getElementById('img-input').click()">
+          <svg class="upload-icon" viewBox="0 0 24 24" width="40" height="40" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <p class="upload-title">Choose leaf image file</p>
+          <p class="upload-subtitle">Supports JPG, JPEG, PNG, WEBP</p>
+        </div>
+        <input type="file" id="img-input" accept="image/*" style="display: none;" />
+        <img id="preview" alt="Leaf Preview" />
+      </div>
+
+      <button class="primary" id="detect-btn" onclick="detect()">
+        <span>Analyze Plant Leaf</span>
+      </button>
+      <div class="spinner" id="spinner">Analyzing leaf image with AI models…</div>
+    </div>
+
+    <!-- Prediction Outcome Card -->
+    <div class="card" id="result">
+      <h2>📋 Diagnostic Result</h2>
+      <div id="disease-badge"></div>
+      <div class="confidence-tag">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-green);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span id="confidence-text"></span>
+      </div>
+      
+      <!-- Brief Explanation -->
+      <div class="result-section">
+        <div class="result-section-title">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          Brief Explanation
+        </div>
+        <div class="result-section-content content-explanation" id="explanation-text"></div>
+      </div>
+      
+      <!-- Treatment Methods -->
+      <div class="result-section">
+        <div class="result-section-title" style="color: var(--accent-green);">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          Treatment Methods
+        </div>
+        <div class="result-section-content content-treatment" id="treatment-text"></div>
+      </div>
+      
+      <!-- Precautions -->
+      <div class="result-section">
+        <div class="result-section-title" style="color: #fb923c;">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          Precautions
+        </div>
+        <div class="result-section-content content-precautions" id="precautions-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: Contextual Chatbot -->
+  <div class="right">
+    <div class="chat-card">
+      <div class="chat-header">
+        <span class="status-dot" id="chat-status-dot"></span>
+        <span>🤖 AI Plant Health Assistant</span>
+      </div>
+      
+      <div class="chat-wrapper">
+        <!-- Messages Pane -->
+        <div id="chat-messages">
+          <div class="msg bot">Hi! I'm your plant health assistant. Analyze a diseased plant image to begin a consultation.</div>
+        </div>
+        
+        <!-- Input Field Pane -->
+        <div class="chat-input">
+          <input type="text" id="chat-input" placeholder="Ask details about treatment..." onkeydown="if(event.key==='Enter') sendChat()" disabled />
+          <button onclick="sendChat()" id="chat-send-btn" disabled>Send</button>
+        </div>
+
+        <!-- Lock Screen Glassmorphic Overlay -->
+        <div id="chat-lock-overlay">
+          <div class="lock-content">
+            <div class="lock-icon-container">
+              <svg class="lock-icon-svg" viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3>Assistant Locked</h3>
+            <p>Please select and analyze an image of a diseased plant to unlock the specialist AI chatbot for custom treatment advice.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let chatHistory = [];
+  let currentPlant = "";
+  let currentDisease = "";
+
+  // Image preview helper
+  document.getElementById("img-input").addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const prev = document.getElementById("preview");
+      prev.src = e.target.result;
+      prev.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  });
+
+  async function detect() {
+    const fileInput = document.getElementById("img-input");
+    if (!fileInput.files[0]) { alert("Please select a leaf image first."); return; }
+
+    const btn = document.getElementById("detect-btn");
+    const spinner = document.getElementById("spinner");
+    btn.disabled = true;
+    spinner.style.display = "block";
+    document.getElementById("result").style.display = "none";
+
+    const form = new FormData();
+    form.append("image", fileInput.files[0]);
+    form.append("plant_type", document.getElementById("plant-type").value);
+
+    try {
+      const res  = await fetch("/predict", { method: "POST", body: form });
+      const data = await res.json();
+
+      if (data.error) { alert(data.error); return; }
+
+      const isHealthy = !data.is_diseased;
+      
+      // Update UI Result Badge
+      const badgeContainer = document.getElementById("disease-badge");
+      const cleanDiseaseName = data.disease.replace(/_/g,' ');
+      if (isHealthy) {
+        badgeContainer.innerHTML = `<span class="badge healthy">✨ ${cleanDiseaseName}</span>`;
+      } else {
+        badgeContainer.innerHTML = `<span class="badge disease">⚠️ ${cleanDiseaseName}</span>`;
+      }
+
+      // Details
+      const formattedPlantName = data.plant.charAt(0).toUpperCase() + data.plant.slice(1);
+      document.getElementById("confidence-text").textContent =
+        `Plant Species: ${formattedPlantName} | Detection Confidence: ${data.confidence}%`;
+      
+      // Helper to format text/objects cleanly
+      const formatField = (val) => {
+        if (!val) return "";
+        if (typeof val === "string") return val;
+        if (typeof val === "object") {
+          if (Array.isArray(val)) return val.join("\n");
+          return Object.entries(val)
+            .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${v}`)
+            .join("\n\n");
+        }
+        return String(val);
+      };
+
+      // Set distinct result fields
+      document.getElementById("explanation-text").textContent = formatField(data.treatment.explanation);
+      document.getElementById("treatment-text").textContent = formatField(data.treatment.treatments);
+      document.getElementById("precautions-text").textContent = formatField(data.treatment.precautions);
+      
+      document.getElementById("result").style.display = "block";
+
+      // Dynamically lock/unlock chatbot
+      const lockOverlay = document.getElementById("chat-lock-overlay");
+      const statusDot = document.getElementById("chat-status-dot");
+      const chatInput = document.getElementById("chat-input");
+      const chatSendBtn = document.getElementById("chat-send-btn");
+      const chatMessages = document.getElementById("chat-messages");
+
+      if (data.is_diseased) {
+        // Unlock chatbot for the disease context
+        lockOverlay.classList.add("unlocked");
+        statusDot.classList.add("active");
+        chatInput.disabled = false;
+        chatSendBtn.disabled = false;
+        chatInput.placeholder = `Ask about ${cleanDiseaseName} treatment...`;
+
+        // Update active context variables
+        currentPlant = data.plant;
+        currentDisease = data.disease;
+        chatHistory = []; // Reset history for fresh diagnosis context
+
+        // Custom greeting message for this disease
+        chatMessages.innerHTML = "";
+        appendMsg(`I detected that your ${formattedPlantName} plant is affected by ${cleanDiseaseName}. I've loaded the custom treatment plan. What questions do you have about the recommended chemical or organic controls?`, "bot");
+      } else {
+        // Lock chatbot if the plant is healthy
+        lockOverlay.classList.remove("unlocked");
+        statusDot.classList.remove("active");
+        chatInput.disabled = true;
+        chatSendBtn.disabled = true;
+        chatInput.placeholder = "Ask about plant diseases...";
+        
+        currentPlant = "";
+        currentDisease = "";
+        chatHistory = [];
+        
+        chatMessages.innerHTML = `<div class="msg bot">Hi! I'm your plant health assistant. Analyze a diseased plant image to begin a consultation.</div>`;
+      }
+
+    } catch(e) {
+      alert("Error connecting to server.");
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+      spinner.style.display = "none";
+    }
+  }
+
+  async function sendChat() {
+    const input = document.getElementById("chat-input");
+    const msg   = input.value.trim();
+    if (!msg) return;
+
+    appendMsg(msg, "user");
+    input.value = "";
+
+    try {
+      const res  = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          message: msg, 
+          history: chatHistory,
+          plant: currentPlant,
+          disease: currentDisease
+        }),
+      });
+      const data = await res.json();
+      if (data.error) { appendMsg("Sorry, something went wrong.", "bot"); return; }
+      appendMsg(data.reply, "bot");
+      chatHistory = data.history;
+    } catch {
+      appendMsg("Unable to reach the assistant.", "bot");
+    }
+  }
+
+  function appendMsg(text, role) {
+    const box = document.getElementById("chat-messages");
+    const div = document.createElement("div");
+    div.className = `msg ${role}`;
+    div.textContent = text;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
+</script>
+</body>
+</html>
