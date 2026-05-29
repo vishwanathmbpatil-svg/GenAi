@@ -750,6 +750,19 @@
 
     try {
       const res  = await fetch("/predict", { method: "POST", body: form });
+      
+      if (!res.ok) {
+        let errText = "";
+        try {
+          const errData = await res.json();
+          errText = errData.error || res.statusText;
+        } catch {
+          errText = await res.text();
+        }
+        alert(`Server Error (${res.status}): ${errText.substring(0, 150)}`);
+        return;
+      }
+
       const data = await res.json();
 
       if (data.error) { alert(data.error); return; }
@@ -856,8 +869,21 @@
           disease: currentDisease
         }),
       });
+      
+      if (!res.ok) {
+        let errText = "";
+        try {
+          const errData = await res.json();
+          errText = errData.error || res.statusText;
+        } catch {
+          errText = await res.text();
+        }
+        appendMsg(`Error (${res.status}): ${errText.substring(0, 100)}`, "bot");
+        return;
+      }
+
       const data = await res.json();
-      if (data.error) { appendMsg("Sorry, something went wrong.", "bot"); return; }
+      if (data.error) { appendMsg(`Sorry, something went wrong: ${data.error}`, "bot"); return; }
       appendMsg(data.reply, "bot");
       chatHistory = data.history;
     } catch {
