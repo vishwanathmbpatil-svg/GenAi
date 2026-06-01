@@ -1,4 +1,4 @@
-import os, json, time, re
+import os, json, time, re, base64
 import numpy as np
 from flask import Flask, request, jsonify, render_template
 from tensorflow.keras.models import load_model
@@ -10,9 +10,11 @@ import io
 app = Flask(__name__)
 
 # ── Groq API client ───────────────────────────────────────────────────────────
-GROQ_API_KEY = "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"
+from dotenv import load_dotenv
+load_dotenv()
+
 client = OpenAI(
-    api_key=GROQ_API_KEY,
+    api_key=os.environ.get("GROQ_API_KEY"),
     base_url="https://api.groq.com/openai/v1"
 )
 
@@ -29,6 +31,51 @@ IMG_SIZE     = (128, 128)
 ALLOWED_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+def is_leaf_image(file_bytes, plant_type="corn"):
+    try:
+        img_b64 = base64.b64encode(file_bytes).decode("utf-8")
+        plant_name = "corn/maize" if plant_type == "corn" else "sugarcane"
+        other_plant = "sugarcane" if plant_type == "corn" else "corn/maize"
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    f"You are a strict plant identification expert. "
+                    f"Your only job is to check if the image is a {plant_name} leaf. "
+                    f"Corn/maize leaves are wide, flat, long with a prominent midrib. "
+                    f"Sugarcane leaves are long, narrow, grass-like with a white midrib and hairy edges. "
+                    f"If the image is a {other_plant} leaf or any non-{plant_name} object, you must reply NO. "
+                    f"Reply with exactly one word only: YES or NO."
+                )
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": f"Is this a {plant_name} leaf? Reply YES or NO only."
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}
+                    }
+                ]
+            }
+        ]
+        response = client.chat.completions.create(
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
+            messages=messages,
+            max_tokens=5,
+            temperature=0.0
+        )
+        result = response.choices[0].message.content.strip().upper()
+        result = "".join(c for c in result if c.isalpha())
+        print(f"[Plant check] plant_type={plant_type} | LLM replied: '{result}'")
+        return result == "YES"
+    except Exception as e:
+        print("Leaf verification failed:", str(e))
+        return True
+
 def allowed_file(filename):
     return os.path.splitext(filename.lower())[1] in ALLOWED_EXTS
 
@@ -111,6 +158,14 @@ def predict_route():
 
         plant_type = request.form.get("plant_type", "corn")
         file_bytes = file.read()
+        
+        # Verify the image is actually a leaf before running the CNN prediction
+        plant_label = "corn/maize" if plant_type == "corn" else "sugarcane"
+        if not is_leaf_image(file_bytes, plant_type):
+            return jsonify({
+                "error": f"The uploaded image does not appear to be a {plant_label} leaf. Please upload a correct {plant_label} leaf image."
+            }), 400
+            
         img_arr    = preprocess(file_bytes)
 
         if plant_type == "sugarcane":

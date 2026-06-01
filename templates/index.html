@@ -593,6 +593,215 @@
         padding: 16px 20px;
       }
     }
+
+    /* Camera and Switch Upload Options Styling */
+    .upload-options {
+      display: flex;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 16px;
+      gap: 4px;
+    }
+
+    .upload-opt-btn {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .upload-opt-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .upload-opt-btn.active {
+      color: #ffffff;
+      background: var(--accent-green);
+      box-shadow: 0 4px 12px var(--accent-green-glow);
+    }
+
+    .upload-camera-zone {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .camera-stream-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 4/3;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+      background: #000;
+    }
+
+    #camera-stream {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .camera-controls {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .camera-btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--input-border);
+    }
+
+    .camera-btn.capture {
+      background: var(--accent-green);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 10px var(--accent-green-glow);
+    }
+
+    .camera-btn.capture:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    .camera-btn.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+    }
+
+    .camera-btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Custom Professional Alert Toast */
+    .custom-toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.85); /* Sleek slate dark background */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(239, 68, 68, 0.1);
+      transform: translateY(-20px) scale(0.95);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 380px;
+      border-left: 4px solid var(--accent-disease);
+    }
+
+    .custom-toast.show {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .custom-toast-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--accent-disease);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .custom-toast-content {
+      flex: 1;
+    }
+
+    .custom-toast-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fca5a5;
+      margin-bottom: 2px;
+    }
+
+    .custom-toast-desc {
+      font-size: 0.82rem;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .custom-toast-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 4px;
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .custom-toast-close:hover {
+      color: #ffffff;
+    }
+
+    .custom-toast.error {
+      border-left: 4px solid var(--accent-disease);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(239, 68, 68, 0.15);
+    }
+    .custom-toast.error .custom-toast-title {
+      color: #fca5a5;
+    }
+    .custom-toast.error .custom-toast-icon {
+      color: var(--accent-disease);
+    }
+
+    .custom-toast.success {
+      border-left: 4px solid var(--accent-green);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+    .custom-toast.success .custom-toast-title {
+      color: #a7f3d0;
+    }
+    .custom-toast.success .custom-toast-icon {
+      color: var(--accent-green);
+    }
   </style>
 </head>
 <body>
@@ -618,9 +827,21 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Upload Leaf Image</label>
-        <!-- Styled Drag & Drop upload zone -->
-        <div class="upload-zone" onclick="document.getElementById('img-input').click()">
+        <label class="form-label">Leaf Image Source</label>
+        
+        <div class="upload-options">
+          <button type="button" class="upload-opt-btn active" id="opt-file-btn" onclick="switchUploadMode('file')">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Upload File
+          </button>
+          <button type="button" class="upload-opt-btn" id="opt-camera-btn" onclick="switchUploadMode('camera')">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            Use Camera
+          </button>
+        </div>
+
+        <!-- 1. File Upload Zone -->
+        <div id="upload-file-zone" class="upload-zone" onclick="document.getElementById('img-input').click()">
           <svg class="upload-icon" viewBox="0 0 24 24" width="40" height="40" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="17 8 12 3 7 8"></polyline>
@@ -630,6 +851,29 @@
           <p class="upload-subtitle">Supports JPG, JPEG, PNG, WEBP</p>
         </div>
         <input type="file" id="img-input" accept="image/*" style="display: none;" />
+
+        <!-- 2. Live Camera Capture Zone -->
+        <div id="upload-camera-zone" class="upload-camera-zone">
+          <div class="camera-stream-wrapper">
+            <video id="camera-stream" autoplay playsinline></video>
+            <canvas id="camera-canvas" style="display: none;"></canvas>
+          </div>
+          <div class="camera-controls">
+            <button type="button" class="camera-btn capture" id="capture-btn" onclick="capturePhoto()">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+              Capture Photo
+            </button>
+            <button type="button" class="camera-btn secondary" id="retake-btn" onclick="startCamera()" style="display: none;">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+              Retake Photo
+            </button>
+            <button type="button" class="camera-btn secondary" id="switch-camera-btn" onclick="toggleCamera()" style="display: none;">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1v22M23 7l-6-6-6 6M1 17l6 6 6-6"></path></svg>
+              Switch Camera
+            </button>
+          </div>
+        </div>
+
         <img id="preview" alt="Leaf Preview" />
       </div>
 
@@ -720,6 +964,17 @@
   let chatHistory = [];
   let currentPlant = "";
   let currentDisease = "";
+  let currentImageSource = "file"; // 'file' or 'camera'
+  let capturedBlob = null;
+  let localStream = null;
+  let currentFacingMode = "environment"; // default to rear camera
+
+  // Re-scan automatically when plant type is changed and image is already loaded
+  document.getElementById("plant-type").addEventListener("change", function () {
+    const hasFile = currentImageSource === "file" && document.getElementById("img-input").files[0];
+    const hasCamera = currentImageSource === "camera" && capturedBlob;
+    if (hasFile || hasCamera) detect();
+  });
 
   // Image preview helper
   document.getElementById("img-input").addEventListener("change", function () {
@@ -734,9 +989,140 @@
     reader.readAsDataURL(file);
   });
 
+  // Switch Upload/Camera modes
+  function switchUploadMode(mode) {
+    currentImageSource = mode;
+    
+    const fileZone = document.getElementById("upload-file-zone");
+    const cameraZone = document.getElementById("upload-camera-zone");
+    const optFileBtn = document.getElementById("opt-file-btn");
+    const optCameraBtn = document.getElementById("opt-camera-btn");
+    const preview = document.getElementById("preview");
+    
+    // Reset preview
+    preview.style.display = "none";
+    preview.src = "";
+    capturedBlob = null;
+    
+    if (mode === "file") {
+      fileZone.style.display = "flex";
+      cameraZone.style.display = "none";
+      optFileBtn.classList.add("active");
+      optCameraBtn.classList.remove("active");
+      stopCamera();
+    } else {
+      fileZone.style.display = "none";
+      cameraZone.style.display = "flex";
+      optFileBtn.classList.remove("active");
+      optCameraBtn.classList.add("active");
+      startCamera();
+    }
+  }
+
+  async function startCamera() {
+    stopCamera(); // Stop any existing streams
+    
+    const video = document.getElementById("camera-stream");
+    const preview = document.getElementById("preview");
+    const captureBtn = document.getElementById("capture-btn");
+    const retakeBtn = document.getElementById("retake-btn");
+    const switchBtn = document.getElementById("switch-camera-btn");
+    
+    video.style.display = "block";
+    preview.style.display = "none";
+    preview.src = "";
+    capturedBlob = null;
+    
+    captureBtn.style.display = "inline-flex";
+    retakeBtn.style.display = "none";
+    
+    const constraints = {
+      video: {
+        facingMode: currentFacingMode,
+        width: { ideal: 640 },
+        height: { ideal: 480 }
+      },
+      audio: false
+    };
+    
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = localStream;
+      
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === "videoinput");
+      if (videoDevices.length > 1) {
+        switchBtn.style.display = "inline-flex";
+      } else {
+        switchBtn.style.display = "none";
+      }
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+      showToast("Camera Access Denied", "Could not access your camera. Please check browser permissions or upload a file.", "error");
+      switchUploadMode('file');
+    }
+  }
+
+  function stopCamera() {
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+      localStream = null;
+    }
+    const video = document.getElementById("camera-stream");
+    if (video) {
+      video.srcObject = null;
+    }
+  }
+
+  function capturePhoto() {
+    const video = document.getElementById("camera-stream");
+    const canvas = document.getElementById("camera-canvas");
+    const preview = document.getElementById("preview");
+    const captureBtn = document.getElementById("capture-btn");
+    const retakeBtn = document.getElementById("retake-btn");
+    const switchBtn = document.getElementById("switch-camera-btn");
+    
+    if (!localStream) return;
+    
+    const width = video.videoWidth || 640;
+    const height = video.videoHeight || 480;
+    canvas.width = width;
+    canvas.height = height;
+    
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, width, height);
+    
+    canvas.toBlob(blob => {
+      capturedBlob = blob;
+      
+      const url = URL.createObjectURL(blob);
+      preview.src = url;
+      preview.style.display = "block";
+      video.style.display = "none";
+      
+      captureBtn.style.display = "none";
+      retakeBtn.style.display = "inline-flex";
+      if (switchBtn) switchBtn.style.display = "none";
+      
+      stopCamera();
+    }, "image/jpeg");
+  }
+
+  function toggleCamera() {
+    currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+    startCamera();
+  }
+
   async function detect() {
-    const fileInput = document.getElementById("img-input");
-    if (!fileInput.files[0]) { alert("Please select a leaf image first."); return; }
+    let imageToUpload = null;
+    if (currentImageSource === "file") {
+      const fileInput = document.getElementById("img-input");
+      if (!fileInput.files[0]) { showToast("File Selection Required", "Please select a leaf image file first.", "error"); return; }
+      imageToUpload = fileInput.files[0];
+    } else {
+      if (!capturedBlob) { showToast("Capture Required", "Please capture a leaf image using the camera first.", "error"); return; }
+      imageToUpload = new File([capturedBlob], "camera_capture.jpg", { type: "image/jpeg" });
+    }
 
     const btn = document.getElementById("detect-btn");
     const spinner = document.getElementById("spinner");
@@ -745,7 +1131,7 @@
     document.getElementById("result").style.display = "none";
 
     const form = new FormData();
-    form.append("image", fileInput.files[0]);
+    form.append("image", imageToUpload);
     form.append("plant_type", document.getElementById("plant-type").value);
 
     try {
@@ -759,13 +1145,13 @@
         } catch {
           errText = await res.text();
         }
-        alert(`Server Error (${res.status}): ${errText.substring(0, 150)}`);
+        showToast("Leaf Scan Failed", errText, "error");
         return;
       }
 
       const data = await res.json();
 
-      if (data.error) { alert(data.error); return; }
+      if (data.error) { showToast("Diagnostic Error", data.error, "error"); return; }
 
       const isHealthy = !data.is_diseased;
       
@@ -842,7 +1228,7 @@
       }
 
     } catch(e) {
-      alert("Error connecting to server.");
+      showToast("Server Connection Failed", "Unable to connect to the analysis server. Please check your internet or console logs.", "error");
       console.error(e);
     } finally {
       btn.disabled = false;
@@ -899,6 +1285,47 @@
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
   }
+
+  // Toast helper logic
+  let toastTimeout = null;
+  function showToast(title, desc, type = "error") {
+    const toast = document.getElementById("toast-notification");
+    const toastTitle = document.getElementById("toast-title");
+    const toastDesc = document.getElementById("toast-desc");
+    const toastIcon = document.getElementById("toast-icon");
+    
+    toastTitle.textContent = title;
+    toastDesc.textContent = desc;
+    
+    toast.className = `custom-toast show ${type}`;
+    
+    if (type === "success") {
+      toastIcon.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    } else {
+      toastIcon.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+    }
+    
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(hideToast, 5000);
+  }
+
+  function hideToast() {
+    const toast = document.getElementById("toast-notification");
+    if (toast) toast.classList.remove("show");
+  }
 </script>
+
+<!-- Custom Professional Toast Notification Container -->
+<div id="toast-notification" class="custom-toast">
+  <div class="custom-toast-icon" id="toast-icon"></div>
+  <div class="custom-toast-content">
+    <div class="custom-toast-title" id="toast-title"></div>
+    <div class="custom-toast-desc" id="toast-desc"></div>
+  </div>
+  <button class="custom-toast-close" onclick="hideToast()">
+    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </button>
+</div>
+
 </body>
 </html>
