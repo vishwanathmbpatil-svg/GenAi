@@ -24,13 +24,27 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 
 _models = {}
 _classes = {}
+_lock = {}
 
 def get_model(plant_type):
     if plant_type not in _models:
-        _models[plant_type] = load_model(os.path.join(BASE, f"{plant_type}_model.h5"))
+        path = os.path.join(BASE, f"{plant_type}_model.h5")
+        _models[plant_type] = load_model(path)
         with open(os.path.join(BASE, f"{plant_type}_model_classes.json")) as f:
             _classes[plant_type] = json.load(f)
+        print(f"[Model] Loaded {plant_type} model")
     return _models[plant_type], _classes[plant_type]
+
+# Preload both models at startup in background to avoid first-request delay
+def _preload():
+    for pt in ["corn", "sugarcane"]:
+        try:
+            get_model(pt)
+        except Exception as e:
+            print(f"[Preload] Failed to load {pt}: {e}")
+
+import threading
+threading.Thread(target=_preload, daemon=True).start()
 
 IMG_SIZE     = (128, 128)
 ALLOWED_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
