@@ -91,23 +91,24 @@ def predict(model, classes, img_arr):
 def sanitize(text):
     return re.sub(r"[<>]", "", text)
 
-def openai_call(messages, json_mode=False, retries=3):
+def openai_call(messages, json_mode=False, retries=2):
     for i in range(retries):
         try:
             kwargs = {
                 "model": "llama-3.3-70b-versatile",
                 "messages": messages,
-                "max_tokens": 600,
-                "temperature": 0.7
+                "max_tokens": 400,
+                "temperature": 0.7,
+                "timeout": 25
             }
             if json_mode:
                 kwargs["response_format"] = {"type": "json_object"}
-                
+
             response = client.chat.completions.create(**kwargs)
             return sanitize(response.choices[0].message.content)
         except Exception as e:
             if "429" in str(e) and i < retries - 1:
-                time.sleep(10 * (i + 1))
+                time.sleep(3)
             else:
                 raise
 
