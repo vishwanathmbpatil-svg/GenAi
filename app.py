@@ -1,4 +1,5 @@
 import os, json, time, re, base64
+from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 from flask import Flask, request, jsonify, render_template
 from tensorflow.keras.models import load_model
@@ -18,14 +19,18 @@ client = OpenAI(
     base_url="https://api.groq.com/openai/v1"
 )
 
-# ── Load models ───────────────────────────────────────────────────────────────
+# ── Load models lazily ────────────────────────────────────────────────────────
 BASE = os.path.dirname(os.path.abspath(__file__))
 
-corn_model      = load_model(os.path.join(BASE, "corn_model.h5"))
-sugarcane_model = load_model(os.path.join(BASE, "sugarcane_model.h5"))
+_models = {}
+_classes = {}
 
-with open(os.path.join(BASE, "corn_model_classes.json"))      as f: corn_classes      = json.load(f)
-with open(os.path.join(BASE, "sugarcane_model_classes.json")) as f: sugarcane_classes = json.load(f)
+def get_model(plant_type):
+    if plant_type not in _models:
+        _models[plant_type] = load_model(os.path.join(BASE, f"{plant_type}_model.h5"))
+        with open(os.path.join(BASE, f"{plant_type}_model_classes.json")) as f:
+            _classes[plant_type] = json.load(f)
+    return _models[plant_type], _classes[plant_type]
 
 IMG_SIZE     = (128, 128)
 ALLOWED_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
@@ -157,22 +162,22 @@ def predict_route():
         if not allowed_file(file.filename):
             return jsonify({"error": "Invalid file type. Upload JPG, PNG or WEBP."}), 400
 
-        plant_type = request.form.get("plant_type", "corn")
-        file_bytes = file.read()
-        
-        # Verify the image is actually a leaf before running the CNN prediction
+        plant_type  = request.form.get("plant_type", "corn")
         plant_label = "corn/maize" if plant_type == "corn" else "sugarcane"
-        if not is_leaf_image(file_bytes, plant_type):
-            return jsonify({
-                "error": f"The uploaded image does not appear to be a {plant_label} leaf. Please upload a correct {plant_label} leaf image."
-            }), 400
-            
-        img_arr    = preprocess(file_bytes)
+        file_bytes  = file.read()
+        img_arr     = preprocess(file_bytes)
 
-        if plant_type == "sugarcane":
-            disease, confidence = predict(sugarcane_model, sugarcane_classes, img_arr)
-        else:
-            disease, confidence = predict(corn_model, corn_classes, img_arr)
+        # Run leaf check and CNN prediction in parallel
+        with ThreadPoolExecutor(max_workers=2) as ex:
+            leaf_future    = ex.submit(is_leaf_image, file_bytes, plant_type)
+            model, classes = get_model(plant_type)
+            predict_future = ex.submit(predict, model, classes, img_arr)
+            is_valid = leaf_future.result()
+            if not is_valid:
+                return jsonify({
+                    "error": f"The uploaded image does not appear to be a {plant_label} leaf. Please upload a correct {plant_label} leaf image."
+                }), 400
+            disease, confidence = predict_future.result()
 
         treatment = get_treatment(plant_type, disease)
 
